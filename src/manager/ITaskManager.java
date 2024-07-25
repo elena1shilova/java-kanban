@@ -5,6 +5,7 @@ import tasks.Subtask;
 import tasks.Task;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public interface ITaskManager {
 
@@ -20,9 +21,9 @@ public interface ITaskManager {
     /*
     методы запроса всей инф-ии в виде списка
      */
-    ArrayList<String> getTasksList();
-    ArrayList<String> getSubtasksList();
-    ArrayList<String> getEpicsList();
+    ArrayList<Task> getTasksList();
+    ArrayList<Subtask> getSubtasksList();
+    ArrayList<Epic> getEpicsList();
 
     /*
     создание новой таски/эпика/сабтаски
@@ -31,12 +32,12 @@ public interface ITaskManager {
 
     Integer addNewEpic(Epic epic);
 
-    Integer addNewSubtask(Subtask subtask, Integer epicID);
+    Integer addNewSubtask(Subtask subtask);
 
     /*
     обновление таски/эпика/сабтаски
      */
-    void updateTask(Task task, Integer id);
+    void updateTask(Task task);
 
     void updateSubtask(Subtask subtask, Integer id);
 
@@ -45,8 +46,6 @@ public interface ITaskManager {
     /*
     удаление таски/эпика/сабтаски по ид (или всех)
      */
-    void delete();
-
     void deleteAllTasks();
 
     void deleteAllSubtasks();
@@ -59,5 +58,7 @@ public interface ITaskManager {
     void deleteSubtask(Integer id);
 
     void deleteEpic(Integer id);
+
+    List<Subtask> getSubtasksOfEpic(Integer epicID);
 
 }

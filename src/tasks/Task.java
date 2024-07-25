@@ -4,10 +4,10 @@ import java.util.Objects;
 
 public class Task {
 
-    String name;
-    String details;
-    Integer id;
-    TaskStatus status = TaskStatus.NEW;
+    protected String name;
+    protected String details;
+    protected Integer id;
+    protected TaskStatus status = TaskStatus.NEW;
 
     public Task(String name, String details) {
         this.name = name;
