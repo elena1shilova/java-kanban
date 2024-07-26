@@ -81,21 +81,26 @@ public class TaskManager implements ITaskManager {
     }
 
     @Override
-    public void updateSubtask(Subtask subtask, Integer id) {
-
+    public void updateSubtask(Subtask subtask) {
+        Integer id = subtask.getId();
         if (subtasks.containsKey(id)) {
-            subtask.setId(id);
             subtasks.put(id, subtask);
-            epics.get(subtask.getEpicID()).updateStatus();
+            Epic epic = epics.get(subtask.getEpicID());
+            if (epic != null) {
+                epic.addSubtasksList(id, subtask);
+                epic.updateStatus();
+            }
         }
     }
 
     @Override
-    public void updateEpic(Epic epic, Integer id) {
-
+    public void updateEpic(Epic epic) {
+        Integer id = epic.getId();
         if (epics.containsKey(id)) {
-            epic.setId(id);
-            epics.put(id, epic);
+            Epic existingEpic = epics.get(id);
+            existingEpic.setName(epic.getName());
+            existingEpic.setDetails(epic.getDetails());
+            epics.put(id, existingEpic);
         }
     }
 

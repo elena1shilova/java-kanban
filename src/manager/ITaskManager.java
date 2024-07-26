@@ -39,9 +39,9 @@ public interface ITaskManager {
      */
     void updateTask(Task task);
 
-    void updateSubtask(Subtask subtask, Integer id);
+    void updateSubtask(Subtask subtask);
 
-    void updateEpic(Epic epic, Integer id);
+    void updateEpic(Epic epic);
 
     /*
     удаление таски/эпика/сабтаски по ид (или всех)

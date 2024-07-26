@@ -51,14 +51,14 @@ public class Main {
         Обновление подзадачи
          */
         subtask.setStatus(TaskStatus.DONE);
-        taskManager.updateSubtask(subtask, subtaskId);
+        taskManager.updateSubtask(subtask);
         System.out.println(taskManager.getSubtask(subtaskId));
 
         /*
         Обновление эпика
          */
         epic.setName("Обновление Epic 1");
-        taskManager.updateEpic(epic, epicId);
+        taskManager.updateEpic(epic);
         System.out.println(taskManager.getEpic(epicId));
 
         /*
