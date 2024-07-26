@@ -8,6 +8,9 @@ public class Subtask extends Task {
 
     public Subtask(String name, String details, Integer epicID) {
         super(name, details);
+        if (epicID.equals(this.getId())) {
+            throw new IllegalArgumentException("Идентификатор подзадачи epicID не может совпадать с ее собственным идентификатором");
+        }
         this.epicID = epicID;
     }
 
@@ -28,9 +31,14 @@ public class Subtask extends Task {
     public int hashCode() {
         return Objects.hash(super.hashCode(), epicID);
     }
+
     public void setEpicID(Integer epicID) {
+        if (epicID.equals(this.getId())) {
+            throw new IllegalArgumentException("Идентификатор подзадачи epicID не может совпадать с ее собственным идентификатором");
+        }
         this.epicID = epicID;
     }
+
     @Override
     public String toString() {
         return "Subtask{" +
