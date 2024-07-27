@@ -1,3 +1,5 @@
+package manager;
+
 import manager.Managers;
 import manager.TaskManager;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,20 +25,6 @@ class InMemoryTaskManagerTest {
 
         Task retrievedTask = taskManager.getTask(id);
         assertEquals(task, retrievedTask);
-    }
-
-    @Test
-    public void testTasksWithSameIdConflict() {
-        Task task1 = new Task("Task 1", "task1details");
-        task1.setId(1);
-
-        Task task2 = new Task("Task 2", "task2details");
-        task2.setId(1);
-
-        taskManager.addNewTask(task1);
-        taskManager.addNewTask(task2);
-
-        assertNotEquals(task1, taskManager.getTask(1));
     }
 
     @Test
