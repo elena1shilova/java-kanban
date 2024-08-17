@@ -36,7 +36,7 @@ public class Task {
     }
 
     public void setId(Integer id) {
-        if(this.id == null) {
+        if (this.id == null) {
             this.id = id;
         }
     }
