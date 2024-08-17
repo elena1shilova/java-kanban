@@ -14,7 +14,7 @@ public interface TaskManager {
      */
     Task getTask(Integer taskID);
 
-    Subtask getSubtask(Integer taskID) ;
+    Subtask getSubtask(Integer taskID);
 
     Epic getEpic(Integer taskID);
 
@@ -22,7 +22,9 @@ public interface TaskManager {
     методы запроса всей инф-ии в виде списка
      */
     ArrayList<Task> getTasksList();
+
     ArrayList<Subtask> getSubtasksList();
+
     ArrayList<Epic> getEpicsList();
 
     /*
@@ -53,7 +55,7 @@ public interface TaskManager {
     void deleteAllEpics();
 
 
-    void deleteTask(Integer id) ;
+    void deleteTask(Integer id);
 
     void deleteSubtask(Integer id);
 
