@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import tasks.Task;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -18,6 +17,7 @@ public class InMemoryHistoryManagerTest {
     public void setUp() {
         manager = Managers.getDefaultHistory();
     }
+
     @Test
     void historyAdd() {
         Task task1 = new Task("Task 1", "task1details");
