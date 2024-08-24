@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import tasks.Task;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -36,12 +37,12 @@ public class InMemoryHistoryManagerTest {
         task4.setId(4);
         manager.add(task4);
 
-        ArrayList<Task> tasksBeforeDelete = manager.getTasks();
+        List<Task> tasksBeforeDelete = manager.getHistory();
         assertEquals(2, (int) tasksBeforeDelete.get(2).getId());
 
         manager.remove(task1.getId());
 
-        ArrayList<Task> tasksAfterDelete = manager.getTasks();
+        List<Task> tasksAfterDelete = manager.getHistory();
         assertEquals(2, (int) tasksAfterDelete.get(1).getId());
         assertFalse(tasksAfterDelete.contains(task1));
     }
