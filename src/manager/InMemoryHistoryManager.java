@@ -60,6 +60,11 @@ public class InMemoryHistoryManager implements HistoryManager {
             node.prev.next = node.next;
         } else head = node.next;
     }
+    public void removeAll() {
+        mapHistory.clear();
+        head = null;
+        tail = null;
+    }
 
     static class Node {
 
