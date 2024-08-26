@@ -36,14 +36,16 @@ public class Task {
     }
 
     public void setId(Integer id) {
-        this.id = id;
+        if (this.id == null) {
+            this.id = id;
+        }
     }
 
     public TaskStatus getStatus() {
         return status;
     }
 
-    public void setStatus(TaskStatus status) {
+    protected void setStatus(TaskStatus status) {
         this.status = status;
     }
 

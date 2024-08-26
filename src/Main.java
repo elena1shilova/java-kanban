@@ -1,10 +1,3 @@
-import manager.TaskManager;
-import manager.InMemoryTaskManager;
-import tasks.Epic;
-import tasks.Subtask;
-import tasks.Task;
-import tasks.TaskStatus;
-
 public class Main {
 
     public static void main(String[] args) {
