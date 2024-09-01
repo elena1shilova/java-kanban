@@ -15,6 +15,13 @@ public class Task {
 
     }
 
+    public Task(Integer id, String name, TaskStatus status, String details) {
+        this.name = name;
+        this.details = details;
+        this.id = id;
+        this.status = status;
+    }
+
     public String getName() {
         return name;
     }
@@ -45,7 +52,7 @@ public class Task {
         return status;
     }
 
-    protected void setStatus(TaskStatus status) {
+    public void setStatus(TaskStatus status) {
         this.status = status;
     }
 

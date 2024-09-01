@@ -1,5 +1,6 @@
 package manager;
 
+import exeption.ManagerSaveException;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
@@ -30,20 +31,20 @@ public interface TaskManager {
     /*
     создание новой таски/эпика/сабтаски
      */
-    Integer addNewTask(Task task);
+    void addNewTask(Task task) throws ManagerSaveException;
 
-    Integer addNewEpic(Epic epic);
+    void addNewEpic(Epic epic) throws ManagerSaveException;
 
-    Integer addNewSubtask(Subtask subtask);
+    void addNewSubtask(Subtask subtask) throws ManagerSaveException;
 
     /*
     обновление таски/эпика/сабтаски
      */
-    void updateTask(Task task);
+    void updateTask(Task task) throws ManagerSaveException;
 
-    void updateSubtask(Subtask subtask);
+    void updateSubtask(Subtask subtask) throws ManagerSaveException;
 
-    void updateEpic(Epic epic);
+    void updateEpic(Epic epic) throws ManagerSaveException;
 
     /*
     удаление таски/эпика/сабтаски по ид (или всех)

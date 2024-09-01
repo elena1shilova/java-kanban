@@ -1,5 +1,6 @@
 package manager;
 
+import exeption.ManagerSaveException;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
@@ -13,11 +14,8 @@ public class InMemoryTaskManager implements TaskManager {
     private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
     private final HashMap<Integer, Epic> epics = new HashMap<>();
     private Integer taskId = 1;
-    private final HistoryManager historyManager;
+    private final HistoryManager historyManager = Managers.getDefaultHistory();
 
-    public InMemoryTaskManager(HistoryManager historyManager) {
-        this.historyManager = historyManager;
-    }
 
     @Override
     public Task getTask(Integer taskId) {
@@ -67,41 +65,39 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Integer addNewTask(Task task) {
+    public void addNewTask(Task task) throws ManagerSaveException {
         task.setId(taskId);
         tasks.put(taskId, task);
-        return taskId++;
+        taskId++;
     }
 
     @Override
-    public Integer addNewEpic(Epic epic) {
+    public void addNewEpic(Epic epic) throws ManagerSaveException {
         epic.setId(taskId);
         epics.put(taskId, epic);
-        return taskId++;
+        taskId++;
     }
 
     @Override
-    public Integer addNewSubtask(Subtask subtask) {
+    public void addNewSubtask(Subtask subtask) throws ManagerSaveException {
         if (epics.containsKey(subtask.getEpicID())) {
             subtask.setId(taskId);
             subtasks.put(taskId, subtask);
             epics.get(subtask.getEpicID()).addSubtasksList(taskId, subtask);
             epics.get(subtask.getEpicID()).updateStatus();
-            return taskId++;
-        } else {
-            return null;
+            taskId++;
         }
     }
 
     @Override
-    public void updateTask(Task task) {
+    public void updateTask(Task task) throws ManagerSaveException {
         if (tasks.containsKey(task.getId())) {
             tasks.put(task.getId(), task);
         }
     }
 
     @Override
-    public void updateSubtask(Subtask subtask) {
+    public void updateSubtask(Subtask subtask) throws ManagerSaveException {
         Integer id = subtask.getId();
         if (subtasks.containsKey(id)) {
             subtasks.put(id, subtask);
@@ -114,7 +110,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateEpic(Epic epic) {
+    public void updateEpic(Epic epic) throws ManagerSaveException {
         Integer id = epic.getId();
         if (epics.containsKey(id)) {
             Epic existingEpic = epics.get(id);

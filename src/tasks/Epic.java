@@ -10,6 +10,11 @@ public class Epic extends Task {
         super(name, details);
     }
 
+    public Epic(Integer id, String name, TaskStatus status, String details) {
+        super(id, name, status, details);
+
+    }
+
     public void updateStatus() {
         int newTasks = 0;
         int doneTasks = 0;
