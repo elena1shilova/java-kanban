@@ -170,7 +170,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 int taskId = task.getId();
                 if (taskId > maxId) {
                     maxId = taskId;
-                    task.setId(maxId);
                 }
                 if (task instanceof Epic) {
                     manager.epics.put(task.getId(), (Epic) task);
@@ -186,6 +185,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     manager.tasks.put(task.getId(), task);
                 }
             }
+            manager.taskId = maxId;
         } catch (IOException e) {
             throw new ManagerSaveException();
         }
