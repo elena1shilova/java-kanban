@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class FileBackedTaskManagerTest {
 
     private Path TestFilePath;
-    private static final String HEDER = "id,type,name,status,description,epic\n";
+    private static final String HEDER = "id,type,name,status,description,epic";
     private FileBackedTaskManager taskManager;
 
     @BeforeEach
