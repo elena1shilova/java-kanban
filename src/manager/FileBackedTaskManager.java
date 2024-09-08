@@ -159,7 +159,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     public static FileBackedTaskManager loadFromFile(Path file) {
         FileBackedTaskManager manager = new FileBackedTaskManager(file);
-
+        int maxId = 0;
         try (BufferedReader reader = Files.newBufferedReader(file)) {
 
             reader.readLine();
@@ -167,6 +167,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             String line;
             while ((line = reader.readLine()) != null) {
                 Task task = fromString(line);
+                int taskId = task.getId();
+                if (taskId > maxId) {
+                    maxId = taskId;
+                    task.setId(maxId);
+                }
                 if (task instanceof Epic) {
                     manager.epics.put(task.getId(), (Epic) task);
                 } else if (task instanceof Subtask) {

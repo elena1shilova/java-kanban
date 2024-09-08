@@ -12,7 +12,7 @@ public class InMemoryTaskManager implements TaskManager {
     protected final HashMap<Integer, Task> tasks = new HashMap<>();
     protected final HashMap<Integer, Subtask> subtasks = new HashMap<>();
     protected final HashMap<Integer, Epic> epics = new HashMap<>();
-    private Integer taskId = 1;
+    protected Integer taskId = 1;
     private final HistoryManager historyManager = Managers.getDefaultHistory();
 
 
@@ -84,9 +84,10 @@ public class InMemoryTaskManager implements TaskManager {
             subtasks.put(taskId, subtask);
             epics.get(subtask.getEpicID()).addSubtasksList(taskId, subtask);
             epics.get(subtask.getEpicID()).updateStatus();
-            taskId++;
+            return taskId++;
+        } else {
+            return null;
         }
-        return taskId;
     }
 
     @Override
