@@ -111,7 +111,43 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         save();
     }
 
-    public static Task fromString(String value) {
+    @Override
+    public void deleteAllTasks() {
+        super.deleteAllTasks();
+        save();
+    }
+
+    @Override
+    public void deleteAllSubtasks() {
+        super.deleteAllSubtasks();
+        save();
+    }
+
+    @Override
+    public void deleteAllEpics() {
+        super.deleteAllEpics();
+        save();
+    }
+
+    @Override
+    public void deleteTask(Integer id) {
+        super.deleteTask(id);
+        save();
+    }
+
+    @Override
+    public void deleteSubtask(Integer id) {
+        super.deleteSubtask(id);
+        save();
+    }
+
+    @Override
+    public void deleteEpic(Integer id) {
+        super.deleteEpic(id);
+        save();
+    }
+
+    private static Task fromString(String value) {
         String[] string = value.split(",");
         return switch (TaskType.valueOf(string[1])) {
             case TASK -> new Task(Integer.parseInt(string[0]), string[2], TaskStatus.valueOf(string[3]), string[4]);
@@ -132,11 +168,17 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             while ((line = reader.readLine()) != null) {
                 Task task = fromString(line);
                 if (task instanceof Epic) {
-                    manager.addNewEpic((Epic) task);
+                    manager.epics.put(task.getId(), (Epic) task);
                 } else if (task instanceof Subtask) {
-                    manager.addNewSubtask((Subtask) task);
+                    Subtask subtask = (Subtask) task;
+                    manager.subtasks.put(task.getId(), subtask);
+
+                    Epic epic = manager.epics.get(subtask.getEpicID());
+                    if (epic != null) {
+                        epic.addSubtasksList(task.getId(), subtask);
+                    }
                 } else {
-                    manager.addNewTask(task);
+                    manager.tasks.put(task.getId(), task);
                 }
             }
         } catch (IOException e) {
