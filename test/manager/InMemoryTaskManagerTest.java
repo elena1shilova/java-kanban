@@ -1,6 +1,5 @@
 package manager;
 
-import exception.ManagerSaveException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import tasks.Task;
@@ -18,7 +17,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void testAddAndRetrieveTasks() throws ManagerSaveException {
+    public void testAddAndRetrieveTasks() {
         Task task = new Task("Task 1", "task1details");
         taskManager.addNewTask(task);
 
@@ -27,7 +26,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void testTaskImmutability() throws ManagerSaveException {
+    public void testTaskImmutability() {
         Task task = new Task("Task 1", "task1details");
         taskManager.addNewTask(task);
 
@@ -37,7 +36,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void testHistoryManager() throws ManagerSaveException {
+    public void testHistoryManager() {
         Task task = new Task("Task 1", "task1details");
         taskManager.addNewTask(task);
 

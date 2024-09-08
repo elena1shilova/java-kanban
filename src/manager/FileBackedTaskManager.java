@@ -18,16 +18,16 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private final Path filePath;
 
-    private static final String HEDER = "id,type,name,status,description,epic\n";
+    private static final String HEADER = "id,type,name,status,description,epic\n";
 
     public FileBackedTaskManager(Path filePath) {
         this.filePath = filePath;
     }
 
 
-    public void save() throws ManagerSaveException {
+    public void save() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(String.valueOf(filePath)))) {
-            writer.write(HEDER);
+            writer.write(HEADER);
             for (Task task : getTasksList()) {
                 writer.write(toString(task) + "\n");
             }
@@ -42,7 +42,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
-    String toString(Task task) {
+    private String toString(Task task) {
         return String.format("%d,%s,%s,%s,%s,%s",
                 task.getId(),
                 TaskType.TASK,
@@ -52,7 +52,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 "");
     }
 
-    String toString(Epic epic) {
+    private String toString(Epic epic) {
         return String.format("%d,%s,%s,%s,%s,%s",
                 epic.getId(),
                 TaskType.EPIC,
@@ -62,7 +62,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 "");
     }
 
-    String toString(Subtask subtask) {
+    private String toString(Subtask subtask) {
         return String.format("%d,%s,%s,%s,%s,%d",
                 subtask.getId(),
                 TaskType.SUBTASK,
