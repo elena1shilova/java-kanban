@@ -1,6 +1,6 @@
 package manager;
 
-import exeption.ManagerSaveException;
+import exception.ManagerSaveException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import tasks.Task;

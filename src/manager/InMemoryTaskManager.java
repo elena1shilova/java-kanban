@@ -1,6 +1,6 @@
 package manager;
 
-import exeption.ManagerSaveException;
+import exception.ManagerSaveException;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
@@ -65,21 +65,21 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void addNewTask(Task task) throws ManagerSaveException {
+    public Integer addNewTask(Task task) throws ManagerSaveException {
         task.setId(taskId);
         tasks.put(taskId, task);
-        taskId++;
+        return taskId++;
     }
 
     @Override
-    public void addNewEpic(Epic epic) throws ManagerSaveException {
+    public Integer addNewEpic(Epic epic) throws ManagerSaveException {
         epic.setId(taskId);
         epics.put(taskId, epic);
-        taskId++;
+        return taskId++;
     }
 
     @Override
-    public void addNewSubtask(Subtask subtask) throws ManagerSaveException {
+    public Integer addNewSubtask(Subtask subtask) throws ManagerSaveException {
         if (epics.containsKey(subtask.getEpicID())) {
             subtask.setId(taskId);
             subtasks.put(taskId, subtask);
@@ -87,6 +87,7 @@ public class InMemoryTaskManager implements TaskManager {
             epics.get(subtask.getEpicID()).updateStatus();
             taskId++;
         }
+        return taskId;
     }
 
     @Override

@@ -1,10 +1,11 @@
 package manager;
 
-import exeption.ManagerSaveException;
+import exception.ManagerSaveException;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
 import tasks.TaskStatus;
+import tasks.TaskType;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -17,17 +18,16 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private final Path filePath;
 
+    private static final String HEDER = "id,type,name,status,description,epic\n";
+
     public FileBackedTaskManager(Path filePath) {
         this.filePath = filePath;
     }
 
-    private enum TaskType {
-        TASK, EPIC, SUBTASK
-    }
 
     public void save() throws ManagerSaveException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(String.valueOf(filePath)))) {
-            writer.write("id,type,name,status,description,epic\n");
+            writer.write(HEDER);
             for (Task task : getTasksList()) {
                 writer.write(toString(task) + "\n");
             }
@@ -73,37 +73,40 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void addNewTask(Task task) throws ManagerSaveException {
+    public Integer addNewTask(Task task) {
         super.addNewTask(task);
         save();
+        return task.getId();
     }
 
     @Override
-    public void addNewEpic(Epic epic) throws ManagerSaveException {
+    public Integer addNewEpic(Epic epic) {
         super.addNewEpic(epic);
         save();
+        return epic.getId();
     }
 
     @Override
-    public void addNewSubtask(Subtask subtask) throws ManagerSaveException {
+    public Integer addNewSubtask(Subtask subtask) {
         super.addNewSubtask(subtask);
         save();
+        return subtask.getId();
     }
 
     @Override
-    public void updateTask(Task task) throws ManagerSaveException {
+    public void updateTask(Task task) {
         super.updateTask(task);
         save();
     }
 
     @Override
-    public void updateSubtask(Subtask subtask) throws ManagerSaveException {
+    public void updateSubtask(Subtask subtask) {
         super.updateSubtask(subtask);
         save();
     }
 
     @Override
-    public void updateEpic(Epic epic) throws ManagerSaveException {
+    public void updateEpic(Epic epic) {
         super.updateEpic(epic);
         save();
     }
@@ -118,7 +121,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         };
     }
 
-    public static FileBackedTaskManager loadFromFile(Path file) throws ManagerSaveException {
+    public static FileBackedTaskManager loadFromFile(Path file) {
         FileBackedTaskManager manager = new FileBackedTaskManager(file);
 
         try (BufferedReader reader = Files.newBufferedReader(file)) {
