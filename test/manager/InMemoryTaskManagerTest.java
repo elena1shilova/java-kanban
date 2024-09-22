@@ -4,11 +4,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import tasks.Task;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class InMemoryTaskManagerTest {
+class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
     private TaskManager taskManager;
 
     @BeforeEach
@@ -16,9 +18,14 @@ class InMemoryTaskManagerTest {
         taskManager = Managers.getDefault();
     }
 
+    @Override
+    protected InMemoryTaskManager createTaskManager() {
+        return new InMemoryTaskManager();
+    }
+
     @Test
     public void testAddAndRetrieveTasks() {
-        Task task = new Task("Task 1", "task1details");
+        Task task = new Task("Task 1", "task1details", Duration.ofNanos(125412), LocalDateTime.now());
         taskManager.addNewTask(task);
 
         Task retrievedTask = taskManager.getTask(1);
@@ -27,7 +34,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     public void testTaskImmutability() {
-        Task task = new Task("Task 1", "task1details");
+        Task task = new Task("Task 1", "task1details", Duration.ofNanos(125412), LocalDateTime.now());
         taskManager.addNewTask(task);
 
         Task retrievedTask = taskManager.getTask(1);
@@ -37,7 +44,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     public void testHistoryManager() {
-        Task task = new Task("Task 1", "task1details");
+        Task task = new Task("Task 1", "task1details", Duration.ofNanos(125412), LocalDateTime.now());
         taskManager.addNewTask(task);
 
         taskManager.getTask(1);
