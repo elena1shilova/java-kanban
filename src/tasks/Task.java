@@ -93,6 +93,7 @@ public class Task {
                 ", status=" + status +
                 '}';
     }
+
     public LocalDateTime getEndTime() {
         return startTime.plus(duration);
     }
