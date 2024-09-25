@@ -15,10 +15,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.TreeSet;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
@@ -26,15 +22,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private static final String HEADER = "id,type,name,status,description,duration,startTime,epic\n";
 
-    private final TreeSet<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime, Comparator.nullsLast(Comparator.naturalOrder())));
 
     public FileBackedTaskManager(Path filePath) {
         this.filePath = filePath;
     }
 
-    public List<Task> getPrioritizedTasks() {
-        return new ArrayList<>(prioritizedTasks);
-    }
 
     public void save() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(String.valueOf(filePath)))) {
@@ -65,14 +57,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     private String toString(Epic epic) {
-        return String.format("%d,%s,%s,%s,%s,%d,%s",
+        return String.format("%d,%s,%s,%s,%s,%d,%s,%s",
                 epic.getId(),
                 TaskType.EPIC,
                 epic.getName(),
                 epic.getStatus(),
                 epic.getDetails(),
                 epic.getDuration().toMinutes(),
-                epic.getStartTime() != null ? epic.getStartTime().toString() : "");
+                epic.getStartTime() != null ? epic.getStartTime().toString() : "",
+                epic.getEndTime() != null ? epic.getEndTime().toString() : "");
     }
 
     private String toString(Subtask subtask) {
@@ -103,7 +96,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         return task.getId();
     }
 
-    public boolean isIntersect(Task task1, Task task2) {
+    private boolean isIntersect(Task task1, Task task2) {
         if (task1.getStartTime() == null || task2.getStartTime() == null) {
             return false;
         }
@@ -117,15 +110,17 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     @Override
     public Integer addNewEpic(Epic epic) {
         super.addNewEpic(epic);
-        if (epic.getStartTime() != null) {
-            prioritizedTasks.add(epic);
-        }
         save();
         return epic.getId();
     }
 
     @Override
     public Integer addNewSubtask(Subtask subtask) {
+        boolean hasIntersection = getPrioritizedTasks().stream()
+                .anyMatch(existingTask -> isIntersect(existingTask, subtask));
+        if (hasIntersection) {
+            throw new RuntimeException();
+        }
         super.addNewSubtask(subtask);
         if (subtask.getStartTime() != null) {
             prioritizedTasks.add(subtask);
@@ -134,9 +129,21 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         return subtask.getId();
     }
 
+    /*
+    При обновлении делается проверка на пересечение по времени, при этом надо исключить саму задачу,
+    чтобы она не пересекалась сама с собой (если время не поменялось)
+    После надо удалить старую запись из сортированного списка и добавить новую. Это замечание и для обновление подзадач
+     */
     @Override
     public void updateTask(Task task) {
         if (task.getStartTime() != null) {
+            boolean hasIntersection = getPrioritizedTasks().stream()
+                    .filter(a -> !a.getId().equals(task.getId()) && !a.getName().equals(task.getName()))
+                    .anyMatch(existingTask -> isIntersect(existingTask, task));
+            if (hasIntersection) {
+                throw new RuntimeException();
+            }
+            prioritizedTasks.remove(task);
             prioritizedTasks.add(task);
         } else {
             prioritizedTasks.remove(task);
@@ -148,6 +155,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     @Override
     public void updateSubtask(Subtask subtask) {
         if (subtask.getStartTime() != null) {
+            boolean hasIntersection = getPrioritizedTasks().stream()
+                    .filter(a -> !a.getId().equals(subtask.getId()) && !a.getName().equals(subtask.getName()))
+                    .anyMatch(existingTask -> isIntersect(existingTask, subtask));
+            if (hasIntersection) {
+                throw new RuntimeException();
+            }
+            prioritizedTasks.remove(subtask);
             prioritizedTasks.add(subtask);
         } else {
             prioritizedTasks.remove(subtask);
@@ -158,23 +172,20 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     @Override
     public void updateEpic(Epic epic) {
-        if (epic.getStartTime() != null) {
-            prioritizedTasks.add(epic);
-        } else {
-            prioritizedTasks.remove(epic);
-        }
         super.updateEpic(epic);
         save();
     }
 
     @Override
     public void deleteAllTasks() {
+        prioritizedTasks.clear();
         super.deleteAllTasks();
         save();
     }
 
     @Override
     public void deleteAllSubtasks() {
+        prioritizedTasks.removeIf(task -> task instanceof Subtask);
         super.deleteAllSubtasks();
         save();
     }
@@ -207,10 +218,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     @Override
     public void deleteEpic(Integer id) {
-        Epic epic = epics.remove(id);
-        if (epic != null && epic.getStartTime() != null) {
-            prioritizedTasks.remove(epic);
-        }
+        prioritizedTasks.removeIf(task -> task instanceof Subtask && ((Subtask) task).getEpicID().equals(id));
         super.deleteEpic(id);
         save();
     }
@@ -221,11 +229,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         Duration duration = Duration.ofMinutes(Long.parseLong(string[5]));
         LocalDateTime startTime = string[6].isEmpty() ? null : LocalDateTime.parse(string[6]);
 
+        LocalDateTime startEnd = LocalDateTime.now();
+        if (TaskType.valueOf(string[1]).equals(TaskType.EPIC)) {
+            startEnd = string[7].isEmpty() ? null : LocalDateTime.parse(string[7]);
+        }
         return switch (TaskType.valueOf(string[1])) {
             case TASK ->
                     new Task(Integer.parseInt(string[0]), string[2], TaskStatus.valueOf(string[3]), string[4], duration, startTime);
             case EPIC ->
-                    new Epic(Integer.parseInt(string[0]), string[2], TaskStatus.valueOf(string[3]), string[4], duration, startTime);
+                    new Epic(Integer.parseInt(string[0]), string[2], TaskStatus.valueOf(string[3]), string[4], duration, startTime, startEnd);
             case SUBTASK ->
                     new Subtask(Integer.parseInt(string[0]), string[2], TaskStatus.valueOf(string[3]), string[4], Integer.parseInt(string[7]), duration, startTime);
         };

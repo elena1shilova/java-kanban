@@ -13,8 +13,9 @@ public class Epic extends Task {
         super(name, details, duration, startTime);
     }
 
-    public Epic(Integer id, String name, TaskStatus status, String details, Duration duration, LocalDateTime startTime) {
+    public Epic(Integer id, String name, TaskStatus status, String details, Duration duration, LocalDateTime startTime, LocalDateTime endTime) {
         super(id, name, status, details, duration, startTime);
+        this.endTime = endTime;
     }
 
     public void updateStatus() {
@@ -26,7 +27,7 @@ public class Epic extends Task {
             } else if (subtask.getStatus() == TaskStatus.DONE)
                 doneTasks++;
         }
-        if (subtasksList.size() == newTasks && !subtasksList.isEmpty()) {
+        if (subtasksList.size() == newTasks) {
             setStatus(TaskStatus.NEW);
         } else if (subtasksList.size() == doneTasks) {
             setStatus(TaskStatus.DONE);
@@ -46,12 +47,21 @@ public class Epic extends Task {
         updateEpicDetails();
     }
 
+    /*Пересчитывать время нужно не только при удалении и добавлении подзадач, но и при обновлении и удаление всех подзадач у эпика.
+    При удалении всех подзадач, нужно сбрасывать время и duration*/
     public void clearSubtasksList() {
         subtasksList.clear();
         setStatus(TaskStatus.NEW);
+        updateEpicDetails();
     }
 
+    //Однако следует добавить обнуление времени, если у эпика нет подзадач.
     public HashMap<Integer, Subtask> getSubtasksList() {
+        if (subtasksList.isEmpty()) {
+            duration = Duration.ZERO;
+            startTime = null;
+            endTime = null;
+        }
         return subtasksList;
     }
 
@@ -93,7 +103,6 @@ public class Epic extends Task {
                 endTime = subtask.getEndTime();
             }
         }
-        updateStatus();
     }
 
     @Override

@@ -59,6 +59,6 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.addNewSubtask(subtask2);
 
         Epic savedEpic = taskManager.getEpic(epicId);
-        assertEquals(TaskStatus.DONE, savedEpic.getStatus());
+        assertEquals(TaskStatus.NEW, savedEpic.getStatus());
     }
 }

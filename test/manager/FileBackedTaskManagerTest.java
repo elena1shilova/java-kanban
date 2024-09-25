@@ -58,9 +58,9 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
 
     @Test
     void saveAndLoadSeveralTasks() {
-        Task task1 = new Task("Задача 1", "Описание задачи 1", Duration.ofNanos(125412), LocalDateTime.now());
-        Epic epic1 = new Epic(2, "Эпик 1", TaskStatus.NEW, "Описание эпика 1", Duration.ofNanos(125412), LocalDateTime.now());
-        Subtask subtask1 = new Subtask(3, "Подзадача 1", TaskStatus.NEW, "Описание подзадачи 1", epic1.getId(), Duration.ofNanos(125412), LocalDateTime.now());
+        Task task1 = new Task("Задача 1", "Описание задачи 1", Duration.ofNanos(125412), LocalDateTime.now().plusDays(1));
+        Epic epic1 = new Epic(2, "Эпик 1", TaskStatus.NEW, "Описание эпика 1", Duration.ofNanos(125412), LocalDateTime.now(), LocalDateTime.now().plusDays(2));
+        Subtask subtask1 = new Subtask(3, "Подзадача 1", TaskStatus.NEW, "Описание подзадачи 1", epic1.getId(), Duration.ofNanos(125412), LocalDateTime.now().plusDays(3));
 
         taskManager.addNewTask(task1);
         taskManager.addNewEpic(epic1);
@@ -96,9 +96,9 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
 
     @Test
     void testSave() throws IOException {
-        Task task = new Task(1, "Задача 1", TaskStatus.NEW, "Описание задачи 1", Duration.ofNanos(125412), LocalDateTime.now());
-        Epic epic = new Epic(2, "Эпик 1", TaskStatus.NEW, "Описание эпика 1", Duration.ofNanos(125412), LocalDateTime.now());
-        Subtask subtask = new Subtask(3, "Подзадача 1", TaskStatus.NEW, "Описание подзадачи 1", 2, Duration.ofNanos(125412), LocalDateTime.now());
+        Task task = new Task(1, "Задача 1", TaskStatus.NEW, "Описание задачи 1", Duration.ofNanos(125412), LocalDateTime.now().plusDays(1));
+        Epic epic = new Epic(2, "Эпик 1", TaskStatus.NEW, "Описание эпика 1", Duration.ofNanos(125412), LocalDateTime.now(), LocalDateTime.now().plusDays(2));
+        Subtask subtask = new Subtask(3, "Подзадача 1", TaskStatus.NEW, "Описание подзадачи 1", 2, Duration.ofNanos(125412), LocalDateTime.now().plusDays(3));
 
         taskManager.addNewTask(task);
         taskManager.addNewEpic(epic);
@@ -116,14 +116,14 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
     void testSaveAndLoadMultipleTasks() {
         FileBackedTaskManager manager = new FileBackedTaskManager(testFilePath);
 
-        Task task1 = new Task(1, "Задача 1", TaskStatus.NEW, "Описание задачи 1", Duration.ofNanos(125412), LocalDateTime.now());
-        Task task2 = new Task(2, "Задача 2", TaskStatus.DONE, "Описание задачи 2", Duration.ofNanos(111), LocalDateTime.now().plusDays(1));
+        Task task1 = new Task(1, "Задача 1", TaskStatus.NEW, "Описание задачи 1", Duration.ofNanos(125412), LocalDateTime.now().plusDays(1));
+        Task task2 = new Task(2, "Задача 2", TaskStatus.DONE, "Описание задачи 2", Duration.ofNanos(111), LocalDateTime.now().plusDays(2));
 
-        Epic epic1 = new Epic(3, "Эпик 1", TaskStatus.IN_PROGRESS, "Описание эпика 1", Duration.ofNanos(125412), LocalDateTime.now());
-        Epic epic2 = new Epic(4, "Эпик 2", TaskStatus.NEW, "Описание эпика 2", Duration.ofNanos(111), LocalDateTime.now());
+        Epic epic1 = new Epic(3, "Эпик 1", TaskStatus.IN_PROGRESS, "Описание эпика 1", Duration.ofNanos(125412), LocalDateTime.now(), LocalDateTime.now().plusDays(3));
+        Epic epic2 = new Epic(4, "Эпик 2", TaskStatus.NEW, "Описание эпика 2", Duration.ofNanos(111), LocalDateTime.now(), LocalDateTime.now().plusDays(4));
 
-        Subtask subtask1 = new Subtask(5, "Подзадача 1", TaskStatus.DONE, "Описание подзадачи 1", 3, Duration.ofNanos(125412), LocalDateTime.now());
-        Subtask subtask2 = new Subtask(6, "Подзадача 2", TaskStatus.IN_PROGRESS, "Описание подзадачи 2", 4, Duration.ofNanos(1111), LocalDateTime.now());
+        Subtask subtask1 = new Subtask(5, "Подзадача 1", TaskStatus.DONE, "Описание подзадачи 1", 3, Duration.ofNanos(125412), LocalDateTime.now().plusDays(5));
+        Subtask subtask2 = new Subtask(6, "Подзадача 2", TaskStatus.IN_PROGRESS, "Описание подзадачи 2", 4, Duration.ofNanos(1111), LocalDateTime.now().plusDays(6));
 
         manager.addNewTask(task1);
         manager.addNewTask(task2);

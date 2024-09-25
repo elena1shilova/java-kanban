@@ -5,8 +5,10 @@ import tasks.Subtask;
 import tasks.Task;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TreeSet;
 
 public class InMemoryTaskManager implements TaskManager {
     protected final HashMap<Integer, Task> tasks = new HashMap<>();
@@ -14,7 +16,7 @@ public class InMemoryTaskManager implements TaskManager {
     protected final HashMap<Integer, Epic> epics = new HashMap<>();
     protected Integer taskId = 1;
     private final HistoryManager historyManager = Managers.getDefaultHistory();
-
+    protected final TreeSet<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime, Comparator.nullsLast(Comparator.naturalOrder())));
 
     @Override
     public Task getTask(Integer taskId) {
@@ -185,7 +187,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    @Override
+
     public List<Subtask> getSubtasksOfEpic(Integer epicID) {
         List<Subtask> subtaskList = new ArrayList<>();
         if (epics.containsKey(epicID)) {
@@ -195,5 +197,10 @@ public class InMemoryTaskManager implements TaskManager {
             }
         }
         return subtaskList;
+    }
+
+    @Override
+    public List<Task> getPrioritizedTasks() {
+        return new ArrayList<>(prioritizedTasks);
     }
 }
