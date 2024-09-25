@@ -1,5 +1,6 @@
 package manager;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import tasks.Epic;
 import tasks.Subtask;
@@ -17,9 +18,12 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     protected abstract T createTaskManager();
 
+    @BeforeEach
+    public void createTaskM() {
+        taskManager = createTaskManager();
+    }
     @Test
     public void testAddNewTask() {
-        taskManager = createTaskManager();
         Task task = new Task("Test Task", "Description", Duration.ofMinutes(60), LocalDateTime.now());
         Integer taskId = taskManager.addNewTask(task);
         assertNotNull(taskId);
@@ -28,7 +32,6 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void testAddNewEpic() {
-        taskManager = createTaskManager();
         Epic epic = new Epic("Test Epic", "Epic Description", Duration.ofMinutes(30), LocalDateTime.now());
         Integer epicId = taskManager.addNewEpic(epic);
         assertNotNull(epicId);
@@ -37,7 +40,6 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void testAddNewSubtask() {
-        taskManager = createTaskManager();
         Epic epic = new Epic("Test Epic", "Epic Description", Duration.ofMinutes(30), LocalDateTime.now());
         Integer epicId = taskManager.addNewEpic(epic);
 
@@ -49,7 +51,6 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void testEpicStatusCalculation() {
-        taskManager = createTaskManager();
         Epic epic = new Epic("Test Epic", "Epic Description", Duration.ofMinutes(30), LocalDateTime.now());
         Integer epicId = taskManager.addNewEpic(epic);
 
