@@ -82,30 +82,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     @Override
     public Integer addNewTask(Task task) {
-
-        boolean hasIntersection = getPrioritizedTasks().stream()
-                .anyMatch(existingTask -> isIntersect(existingTask, task));
-        if (hasIntersection) {
-            throw new RuntimeException();
-        }
         super.addNewTask(task);
-        if (task.getStartTime() != null) {
-            prioritizedTasks.add(task);
-        }
         save();
         return task.getId();
     }
 
-    private boolean isIntersect(Task task1, Task task2) {
-        if (task1.getStartTime() == null || task2.getStartTime() == null) {
-            return false;
-        }
-
-        LocalDateTime endTime1 = task1.getEndTime();
-        LocalDateTime endTime2 = task2.getEndTime();
-
-        return task1.getStartTime().isBefore(endTime2) && endTime1.isAfter(task2.getStartTime());
-    }
 
     @Override
     public Integer addNewEpic(Epic epic) {
@@ -116,15 +97,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     @Override
     public Integer addNewSubtask(Subtask subtask) {
-        boolean hasIntersection = getPrioritizedTasks().stream()
-                .anyMatch(existingTask -> isIntersect(existingTask, subtask));
-        if (hasIntersection) {
-            throw new RuntimeException();
-        }
         super.addNewSubtask(subtask);
-        if (subtask.getStartTime() != null) {
-            prioritizedTasks.add(subtask);
-        }
         save();
         return subtask.getId();
     }
@@ -136,36 +109,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
      */
     @Override
     public void updateTask(Task task) {
-        if (task.getStartTime() != null) {
-            boolean hasIntersection = getPrioritizedTasks().stream()
-                    .filter(a -> !a.getId().equals(task.getId()) && !a.getName().equals(task.getName()))
-                    .anyMatch(existingTask -> isIntersect(existingTask, task));
-            if (hasIntersection) {
-                throw new RuntimeException();
-            }
-            prioritizedTasks.remove(task);
-            prioritizedTasks.add(task);
-        } else {
-            prioritizedTasks.remove(task);
-        }
         super.updateTask(task);
         save();
     }
 
     @Override
     public void updateSubtask(Subtask subtask) {
-        if (subtask.getStartTime() != null) {
-            boolean hasIntersection = getPrioritizedTasks().stream()
-                    .filter(a -> !a.getId().equals(subtask.getId()) && !a.getName().equals(subtask.getName()))
-                    .anyMatch(existingTask -> isIntersect(existingTask, subtask));
-            if (hasIntersection) {
-                throw new RuntimeException();
-            }
-            prioritizedTasks.remove(subtask);
-            prioritizedTasks.add(subtask);
-        } else {
-            prioritizedTasks.remove(subtask);
-        }
         super.updateSubtask(subtask);
         save();
     }
@@ -178,14 +127,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     @Override
     public void deleteAllTasks() {
-        prioritizedTasks.clear();
         super.deleteAllTasks();
         save();
     }
 
     @Override
     public void deleteAllSubtasks() {
-        prioritizedTasks.removeIf(task -> task instanceof Subtask);
         super.deleteAllSubtasks();
         save();
     }
@@ -198,27 +145,18 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     @Override
     public void deleteTask(Integer id) {
-        Task task = tasks.remove(id);
-        if (task != null && task.getStartTime() != null) {
-            prioritizedTasks.remove(task);
-        }
         super.deleteTask(id);
         save();
     }
 
     @Override
     public void deleteSubtask(Integer id) {
-        Subtask subtask = subtasks.remove(id);
-        if (subtask != null && subtask.getStartTime() != null) {
-            prioritizedTasks.remove(subtask);
-        }
         super.deleteSubtask(id);
         save();
     }
 
     @Override
     public void deleteEpic(Integer id) {
-        prioritizedTasks.removeIf(task -> task instanceof Subtask && ((Subtask) task).getEpicID().equals(id));
         super.deleteEpic(id);
         save();
     }
@@ -229,7 +167,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         Duration duration = Duration.ofMinutes(Long.parseLong(string[5]));
         LocalDateTime startTime = string[6].isEmpty() ? null : LocalDateTime.parse(string[6]);
 
-        LocalDateTime startEnd = LocalDateTime.now();
+        LocalDateTime startEnd = null;
         if (TaskType.valueOf(string[1]).equals(TaskType.EPIC)) {
             startEnd = string[7].isEmpty() ? null : LocalDateTime.parse(string[7]);
         }
@@ -262,13 +200,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 } else if (task instanceof Subtask) {
                     Subtask subtask = (Subtask) task;
                     manager.subtasks.put(task.getId(), subtask);
-
+                    manager.prioritizedTasks.add(subtask);
                     Epic epic = manager.epics.get(subtask.getEpicID());
                     if (epic != null) {
                         epic.addSubtasksList(task.getId(), subtask);
                     }
                 } else {
                     manager.tasks.put(task.getId(), task);
+                    manager.prioritizedTasks.add(task);
                 }
             }
             manager.taskId = maxId;
