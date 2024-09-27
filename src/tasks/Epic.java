@@ -51,6 +51,7 @@ public class Epic extends Task {
         subtasksList.put(id, subtask);
         updateEpicDetails();
     }
+
     public void clearSubtasksList() {
         subtasksList.clear();
         setStatus(TaskStatus.NEW);
