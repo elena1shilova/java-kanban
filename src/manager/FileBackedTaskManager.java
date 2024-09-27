@@ -57,15 +57,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     private String toString(Epic epic) {
-        return String.format("%d,%s,%s,%s,%s,%d,%s,%s",
+        return String.format("%d,%s,%s,%s,%s,%d,%s",
                 epic.getId(),
                 TaskType.EPIC,
                 epic.getName(),
                 epic.getStatus(),
                 epic.getDetails(),
                 epic.getDuration().toMinutes(),
-                epic.getStartTime() != null ? epic.getStartTime().toString() : "",
-                epic.getEndTime() != null ? epic.getEndTime().toString() : "");
+                epic.getStartTime() != null ? epic.getStartTime().toString() : "");
     }
 
     private String toString(Subtask subtask) {
@@ -102,11 +101,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         return subtask.getId();
     }
 
-    /*
-    При обновлении делается проверка на пересечение по времени, при этом надо исключить саму задачу,
-    чтобы она не пересекалась сама с собой (если время не поменялось)
-    После надо удалить старую запись из сортированного списка и добавить новую. Это замечание и для обновление подзадач
-     */
     @Override
     public void updateTask(Task task) {
         super.updateTask(task);
@@ -167,15 +161,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         Duration duration = Duration.ofMinutes(Long.parseLong(string[5]));
         LocalDateTime startTime = string[6].isEmpty() ? null : LocalDateTime.parse(string[6]);
 
-        LocalDateTime startEnd = null;
-        if (TaskType.valueOf(string[1]).equals(TaskType.EPIC)) {
-            startEnd = string[7].isEmpty() ? null : LocalDateTime.parse(string[7]);
-        }
         return switch (TaskType.valueOf(string[1])) {
             case TASK ->
                     new Task(Integer.parseInt(string[0]), string[2], TaskStatus.valueOf(string[3]), string[4], duration, startTime);
             case EPIC ->
-                    new Epic(Integer.parseInt(string[0]), string[2], TaskStatus.valueOf(string[3]), string[4], duration, startTime, startEnd);
+                    new Epic(Integer.parseInt(string[0]), string[2], TaskStatus.valueOf(string[3]), string[4], duration, startTime);
             case SUBTASK ->
                     new Subtask(Integer.parseInt(string[0]), string[2], TaskStatus.valueOf(string[3]), string[4], Integer.parseInt(string[7]), duration, startTime);
         };

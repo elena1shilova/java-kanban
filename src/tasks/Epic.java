@@ -18,6 +18,11 @@ public class Epic extends Task {
         this.endTime = endTime;
     }
 
+    public Epic(Integer id, String name, TaskStatus status, String details, Duration duration, LocalDateTime startTime) {
+        super(id, name, status, details, duration, startTime);
+    }
+
+
     public void updateStatus() {
         int newTasks = 0;
         int doneTasks = 0;
@@ -46,22 +51,13 @@ public class Epic extends Task {
         subtasksList.put(id, subtask);
         updateEpicDetails();
     }
-
-    /*Пересчитывать время нужно не только при удалении и добавлении подзадач, но и при обновлении и удаление всех подзадач у эпика.
-    При удалении всех подзадач, нужно сбрасывать время и duration*/
     public void clearSubtasksList() {
         subtasksList.clear();
         setStatus(TaskStatus.NEW);
         updateEpicDetails();
     }
 
-    //Однако следует добавить обнуление времени, если у эпика нет подзадач.
     public HashMap<Integer, Subtask> getSubtasksList() {
-        if (subtasksList.isEmpty()) {
-            duration = Duration.ZERO;
-            startTime = null;
-            endTime = null;
-        }
         return subtasksList;
     }
 
