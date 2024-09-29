@@ -1,9 +1,16 @@
 package manager;
 
+import java.nio.file.Paths;
+
 public class Managers {
 
+    private static TaskManager taskManager;
+
     public static TaskManager getDefault() {
-        return new InMemoryTaskManager();
+        if (taskManager == null) {
+            taskManager = new FileBackedTaskManager(Paths.get("test_tasks.csv"));
+        }
+        return taskManager;
     }
 
     public static HistoryManager getDefaultHistory() {
