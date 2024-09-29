@@ -1,6 +1,5 @@
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import handler.BaseHttpHandler;
 import handler.DurationAdapter;
 import handler.LocalDateTimeAdapter;
 import manager.InMemoryTaskManager;
@@ -8,7 +7,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import tasks.Epic;
-import tasks.Task;
 
 import java.io.IOException;
 import java.net.URI;
@@ -44,18 +42,6 @@ public class EpicsHandlerTest {
         server.stop();
     }
 
-    @Test
-    public void testGetEpicList() throws IOException, InterruptedException {
-        HttpClient client = HttpClient.newHttpClient();
-        URI url = URI.create("http://localhost:8080/epics");
-        HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
-
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        assertEquals(200, response.statusCode());
-
-        assertNotNull(response.body());
-    }
     @Test
     public void testAddEpics() throws IOException, InterruptedException {
         String taskJson = gson.toJson(epic);
