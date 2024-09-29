@@ -15,8 +15,6 @@ import java.time.LocalDateTime;
 public abstract class BaseHttpHandler implements HttpHandler {
 
     protected final TaskManager manager;
-
-    // Конструктор, принимающий TaskManager
     public BaseHttpHandler(TaskManager manager) {
         this.manager = manager;
     }
