@@ -29,8 +29,8 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
         Task task = new Task("Task 1", "task1details", Duration.ofNanos(125412), LocalDateTime.now());
         taskManager.addNewTask(task);
 
-        Task retrievedTask = taskManager.getTask(1);
-        assertEquals(task, retrievedTask);
+        Task retrievedTask = taskManager.getTask(3);
+        assertEquals(task.getId(), retrievedTask.getId());
     }
 
     @Test

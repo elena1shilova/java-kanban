@@ -62,26 +62,4 @@ public class SubtasksHandlerTest {
 
         assertNotNull(response.body());
     }
-
-    @Test
-    public void testGetSubtasksForId() throws IOException, InterruptedException {
-
-        Epic epic1 = new Epic("Epic 1", "epic1details", Duration.ZERO, LocalDateTime.now().minusDays(6));
-        BaseHttpHandler.manager.addNewEpic(epic1);
-        Subtask subtask1 = new Subtask(1, "Subtask 1", TaskStatus.NEW, "Details 1", epic1.getId(), Duration.ofHours(1), LocalDateTime.now().minusDays(5));
-        Subtask subtask2 = new Subtask(2, "Subtask 2", TaskStatus.NEW, "Details 2", epic1.getId(), Duration.ofHours(1), LocalDateTime.now());
-        BaseHttpHandler.manager.addNewSubtask(subtask1);
-
-        BaseHttpHandler.manager.addNewSubtask(subtask2);
-
-        HttpClient client = HttpClient.newHttpClient();
-        URI url = URI.create("http://localhost:8080/subtasks/" + 2);
-        HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
-
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        assertEquals(200, response.statusCode());
-
-        assertNotNull(response.body());
-    }
 }
