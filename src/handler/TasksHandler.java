@@ -2,6 +2,7 @@ package handler;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import manager.InMemoryTaskManager;
 import tasks.Task;
 
 import java.io.BufferedReader;
@@ -11,7 +12,11 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public class TasksHandler extends BaseHttpHandler implements HttpHandler {
+    private final InMemoryTaskManager taskManager;
 
+    public TasksHandler(InMemoryTaskManager taskManager) {
+        this.taskManager = taskManager;
+    }
     @Override
     public void handle(HttpExchange exchange) throws IOException {
 

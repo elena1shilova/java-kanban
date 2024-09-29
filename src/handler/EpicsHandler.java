@@ -2,6 +2,7 @@ package handler;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import manager.InMemoryTaskManager;
 import tasks.Epic;
 
 import java.io.BufferedReader;
@@ -11,6 +12,10 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
+
+    public EpicsHandler(InMemoryTaskManager taskManager) {
+        super();
+    }
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {

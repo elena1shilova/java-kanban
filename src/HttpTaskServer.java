@@ -4,43 +4,45 @@ import handler.HistoryHandler;
 import handler.PrioritizedHandler;
 import handler.SubtasksHandler;
 import handler.TasksHandler;
+import manager.InMemoryTaskManager;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
 public class HttpTaskServer {
     private static final int PORT = 8080;
-    private static final HttpServer httpServer;
-
-    static {
-        try {
-            httpServer = HttpServer.create();
-            httpServer.bind(new InetSocketAddress(PORT), 0);
-
-            httpServer.createContext("/tasks", new TasksHandler());
-            httpServer.createContext("/subtasks", new SubtasksHandler());
-            httpServer.createContext("/epics", new EpicsHandler());
-            httpServer.createContext("/history", new HistoryHandler());
-            httpServer.createContext("/prioritized", new PrioritizedHandler());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    private final HttpServer httpServer;
+    private final InMemoryTaskManager taskManager;
+    public HttpTaskServer(InMemoryTaskManager taskManager) throws IOException {
+        this.taskManager = taskManager;
+        this.httpServer = HttpServer.create(new InetSocketAddress(PORT), 0);
+        initializeContexts();
+    }
+    private void initializeContexts() {
+        httpServer.createContext("/tasks", new TasksHandler(taskManager));
+        httpServer.createContext("/subtasks", new SubtasksHandler(taskManager));
+        httpServer.createContext("/epics", new EpicsHandler(taskManager));
+        httpServer.createContext("/history", new HistoryHandler(taskManager));
+        httpServer.createContext("/prioritized", new PrioritizedHandler(taskManager));
     }
 
     public static void main(String[] args) {
 
-        start();
+        try {
+            InMemoryTaskManager taskManager = new InMemoryTaskManager();
+            HttpTaskServer server = new HttpTaskServer(taskManager);
+            server.start();
+            System.out.println("Server is running on port " + PORT);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public static void start() {
-
-            httpServer.start();
-
+    public void start() {
+        httpServer.start();
     }
 
-    public static void stop() {
-
-            httpServer.stop(1);
-
+    public void stop() {
+        httpServer.stop(1);
     }
 }
