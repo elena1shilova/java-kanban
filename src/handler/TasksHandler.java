@@ -1,9 +1,7 @@
 package handler;
 
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import exception.NotFoundException;
-import manager.InMemoryTaskManager;
 import manager.TaskManager;
 import tasks.Task;
 

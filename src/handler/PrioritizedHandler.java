@@ -2,10 +2,8 @@ package handler;
 
 import com.sun.net.httpserver.HttpExchange;
 import manager.TaskManager;
-import tasks.Task;
 
 import java.io.IOException;
-import java.util.List;
 
 public class PrioritizedHandler extends BaseHttpHandler {
 
