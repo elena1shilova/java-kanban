@@ -2,7 +2,9 @@ package handler;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import exception.NotFoundException;
 import manager.InMemoryTaskManager;
+import manager.TaskManager;
 import tasks.Task;
 
 import java.io.BufferedReader;
@@ -11,11 +13,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-public class TasksHandler extends BaseHttpHandler implements HttpHandler {
-    private final InMemoryTaskManager taskManager;
+public class TasksHandler extends BaseHttpHandler {
 
-    public TasksHandler(InMemoryTaskManager taskManager) {
-        this.taskManager = taskManager;
+    public TasksHandler(TaskManager manager) {
+        super(manager);
     }
 
     @Override
@@ -26,11 +27,10 @@ public class TasksHandler extends BaseHttpHandler implements HttpHandler {
                 String[] pathParts = exchange.getRequestURI().getPath().split("/");
                 if (pathParts.length == 2 && pathParts[1].equals("tasks")) {
                     String result = getTasksList();
-                    if (result.isEmpty()) {
-                        sendNotFound(exchange, result);
-                    } else {
-                        sendText(exchange, result);
-                    }
+
+
+                    sendText(exchange, result);
+
                     break;
                 }
                 if (pathParts.length == 3 && pathParts[1].equals("tasks")) {
@@ -61,14 +61,14 @@ public class TasksHandler extends BaseHttpHandler implements HttpHandler {
                         updateTask(task);
                         sendTextCreateOrUpdate(exchange, "Успешное изменение");
 
-                    } catch (RuntimeException e) {
+                    } catch (NotFoundException e) {
                         sendHasInteractions(exchange, "Пересечение");
                     }
                 } else {
                     try {
                         sendTextCreateOrUpdate(exchange, addNewTask(task));
 
-                    } catch (RuntimeException e) {
+                    } catch (NotFoundException e) {
                         sendHasInteractions(exchange, "Пересечение");
                     }
                 }
@@ -87,11 +87,8 @@ public class TasksHandler extends BaseHttpHandler implements HttpHandler {
     private String getTasksList() {
         ArrayList<Task> tasks = manager.getTasksList();
 
-        if (tasks.isEmpty()) {
-            return "";
-        } else {
-            return gson.toJson(tasks);
-        }
+        return gson.toJson(tasks);
+
     }
 
     private String getTask(String id) {

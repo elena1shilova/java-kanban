@@ -1,5 +1,6 @@
 package manager;
 
+import exception.NotFoundException;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
@@ -10,6 +11,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeSet;
+
 
 public class InMemoryTaskManager implements TaskManager {
     protected final HashMap<Integer, Task> tasks = new HashMap<>();
@@ -136,7 +138,7 @@ public class InMemoryTaskManager implements TaskManager {
                         .filter(a -> !a.getId().equals(subtask.getId()))
                         .anyMatch(existingTask -> isIntersect(existingTask, subtask));
                 if (hasIntersection) {
-                    throw new RuntimeException();
+                    throw new NotFoundException();
                 }
                 prioritizedTasks.remove(subtasks.get(subtask.getId()));
                 prioritizedTasks.add(subtask);

@@ -1,16 +1,16 @@
 package handler;
 
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import manager.InMemoryTaskManager;
+import manager.TaskManager;
 import tasks.Task;
 
 import java.io.IOException;
 import java.util.List;
 
-public class PrioritizedHandler extends BaseHttpHandler implements HttpHandler {
-    public PrioritizedHandler(InMemoryTaskManager taskManager) {
-        super();
+public class PrioritizedHandler extends BaseHttpHandler {
+
+    public PrioritizedHandler(TaskManager manager) {
+        super(manager);
     }
 
     @Override
@@ -31,11 +31,6 @@ public class PrioritizedHandler extends BaseHttpHandler implements HttpHandler {
     }
 
     private String getPrioritizedTasks() {
-        List<Task> tasks = manager.getPrioritizedTasks();
-        if (tasks == null || tasks.isEmpty()) {
-            return "";
-        } else {
-            return gson.toJson(tasks);
-        }
+        return gson.toJson(manager.getPrioritizedTasks());
     }
 }

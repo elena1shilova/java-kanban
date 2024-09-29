@@ -1,20 +1,21 @@
 package handler;
 
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import manager.InMemoryTaskManager;
+import manager.TaskManager;
 import tasks.Epic;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
-public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
+public class EpicsHandler extends BaseHttpHandler {
 
-    public EpicsHandler(InMemoryTaskManager taskManager) {
-        super();
+
+    public EpicsHandler(TaskManager manager) {
+        super(manager);
     }
 
     @Override
@@ -25,11 +26,9 @@ public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
                 String[] pathParts = exchange.getRequestURI().getPath().split("/");
                 if (pathParts.length == 2 && pathParts[1].equals("epics")) {
                     String result = getEpicsList();
-                    if (result.isEmpty()) {
-                        sendNotFound(exchange, result);
-                    } else {
-                        sendText(exchange, result);
-                    }
+
+                    sendText(exchange, result);
+
                     break;
                 }
                 if (pathParts.length == 3 && pathParts[1].equals("epics")) {
@@ -52,33 +51,19 @@ public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
                 }
             }
             case "POST": {
-                InputStream bodyContent = exchange.getRequestBody();
-                if (bodyContent == null) {
+                String bodyContent = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+                if (bodyContent.isEmpty()) {
                     sendNotFound(exchange, "отсутсвует данные для сохранения/изменения");
                 }
-                BufferedReader reader = new BufferedReader(new InputStreamReader(bodyContent));
-                StringBuilder requestBody = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    requestBody.append(line).append("\n");
-                }
-                reader.close();
-                Epic epic = gson.fromJson(requestBody.toString(), Epic.class);
+                Epic epic = gson.fromJson(bodyContent, Epic.class);
                 if (epic.getId() != null) {
-                    try {
-                        updateEpic(epic);
-                        sendTextCreateOrUpdate(exchange, "Успешное изменение");
 
-                    } catch (RuntimeException e) {
-                        sendHasInteractions(exchange, "Пересечение");
-                    }
+                    updateEpic(epic);
+                    sendTextCreateOrUpdate(exchange, "Успешное изменение");
+
                 } else {
-                    try {
-                        sendTextCreateOrUpdate(exchange, addNewEpic(epic));
+                    sendTextCreateOrUpdate(exchange, addNewEpic(epic));
 
-                    } catch (RuntimeException e) {
-                        sendHasInteractions(exchange, "Пересечение");
-                    }
                 }
                 break;
             }
@@ -94,11 +79,9 @@ public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
 
     private String getEpicsList() {
         ArrayList<Epic> epics = manager.getEpicsList();
-        if (epics.isEmpty()) {
-            return "";
-        } else {
-            return gson.toJson(epics);
-        }
+
+        return gson.toJson(epics);
+
     }
 
     private String getEpic(String id) {

@@ -3,15 +3,17 @@ package handler;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import manager.InMemoryTaskManager;
+import manager.TaskManager;
 import tasks.Task;
 
 import java.io.IOException;
 import java.util.List;
 
-public class HistoryHandler extends BaseHttpHandler implements HttpHandler {
+public class HistoryHandler extends BaseHttpHandler {
 
-    public HistoryHandler(InMemoryTaskManager taskManager) {
-        super();
+
+    public HistoryHandler(TaskManager manager) {
+        super(manager);
     }
 
     @Override
@@ -32,11 +34,6 @@ public class HistoryHandler extends BaseHttpHandler implements HttpHandler {
     }
 
     private String getHistory() {
-        List<Task> tasks = manager.getHistory();
-        if (tasks == null || tasks.isEmpty()) {
-            return "";
-        } else {
-            return gson.toJson(tasks);
-        }
+        return gson.toJson(manager.getPrioritizedTasks());
     }
 }

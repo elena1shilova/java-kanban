@@ -3,6 +3,7 @@ package handler;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
 import manager.Managers;
 import manager.TaskManager;
 
@@ -12,9 +13,14 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
-public class BaseHttpHandler {
+public abstract class BaseHttpHandler implements HttpHandler {
 
-    public static final TaskManager manager = Managers.getDefault();
+    protected final TaskManager manager;
+
+    // Конструктор, принимающий TaskManager
+    public BaseHttpHandler(TaskManager manager) {
+        this.manager = manager;
+    }
 
 
     protected Gson gson = new GsonBuilder()
