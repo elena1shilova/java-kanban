@@ -1,6 +1,6 @@
 package manager;
 
-import exception.NotFoundException;
+import exception.IntersectionException;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
@@ -138,7 +138,7 @@ public class InMemoryTaskManager implements TaskManager {
                         .filter(a -> !a.getId().equals(subtask.getId()))
                         .anyMatch(existingTask -> isIntersect(existingTask, subtask));
                 if (hasIntersection) {
-                    throw new NotFoundException();
+                    throw new IntersectionException();
                 }
                 prioritizedTasks.remove(subtasks.get(subtask.getId()));
                 prioritizedTasks.add(subtask);

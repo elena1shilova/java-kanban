@@ -1,7 +1,7 @@
 package handler;
 
 import com.sun.net.httpserver.HttpExchange;
-import exception.NotFoundException;
+import exception.IntersectionException;
 import manager.TaskManager;
 import tasks.Subtask;
 
@@ -58,14 +58,14 @@ public class SubtasksHandler extends BaseHttpHandler {
                         updateSubtask(task);
                         sendTextCreateOrUpdate(exchange, "Успешное изменение");
 
-                    } catch (NotFoundException e) {
+                    } catch (IntersectionException e) {
                         sendHasInteractions(exchange, "Пересечение");
                     }
                 } else {
                     try {
                         sendTextCreateOrUpdate(exchange, addNewSubtask(task));
 
-                    } catch (NotFoundException e) {
+                    } catch (IntersectionException e) {
                         sendHasInteractions(exchange, "Пересечение");
                     }
                 }
