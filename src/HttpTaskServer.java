@@ -13,11 +13,13 @@ public class HttpTaskServer {
     private static final int PORT = 8080;
     private final HttpServer httpServer;
     private final InMemoryTaskManager taskManager;
+
     public HttpTaskServer(InMemoryTaskManager taskManager) throws IOException {
         this.taskManager = taskManager;
         this.httpServer = HttpServer.create(new InetSocketAddress(PORT), 0);
         initializeContexts();
     }
+
     private void initializeContexts() {
         httpServer.createContext("/tasks", new TasksHandler(taskManager));
         httpServer.createContext("/subtasks", new SubtasksHandler(taskManager));
